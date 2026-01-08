@@ -97,6 +97,7 @@ sudo apt-get install colmap
 sudo apt-get install ffmpeg
 sudo apt-get install xvfb
 pip install open3d
+```
 
 ### Dependencies
 
@@ -112,10 +113,11 @@ Workflow
 1. Frame Extraction from Drone Video
 Drone video is converted into individual image frames using FFmpeg.
 
-bash
+```bash
 Copy code
 ffmpeg -i input_video.mp4 -vf fps=2 -qscale:v 2 images/frame_%04d.jpg
 Extracts frames at 2 FPS
+```
 
 Produces high-quality JPEG images
 
@@ -126,7 +128,7 @@ COLMAP computes camera poses and a sparse point cloud.
 
 Example (automatic pipeline):
 
-bash
+```bash
 Copy code
 colmap automatic_reconstructor \
   --workspace_path PROJECT \
@@ -134,6 +136,7 @@ colmap automatic_reconstructor \
   --quality high \
   --dense 1 \
   --use_gpu 1
+```
 In the notebook, this is executed using xvfb-run to support headless GPU SIFT in Colab.
 
 3. Dense Reconstruction
@@ -147,7 +150,7 @@ stereo fusion
 
 Key commands:
 
-bash
+```bash
 Copy code
 colmap image_undistorter
 colmap patch_match_stereo
@@ -159,11 +162,12 @@ fused.ply
 Dense point cloud with XYZ + RGB
 
 Often contains millions of points
+```
 
 4. Mesh Reconstruction (Poisson Surface)
 The dense point cloud is converted into a watertight mesh using Poisson Surface Reconstruction in Open3D.
 
-python
+```python
 Copy code
 mesh, densities = o3d.geometry.TriangleMesh.create_from_point_cloud_poisson(
     pcd, depth=11, scale=1.1
@@ -175,13 +179,14 @@ Output:
 mesh_poisson_o3d.ply
 
 Smooth, continuous surface
+```
 
 Open3D was chosen instead of COLMAP’s Poisson mesher for greater control and extensibility.
 
 5. Color Transfer (Textured Mesh)
 Vertex colors are transferred from the dense point cloud using nearest-neighbor lookup.
 
-python
+```python
 Copy code
 pcd_tree = o3d.geometry.KDTreeFlann(pcd)
 colors = []
@@ -199,6 +204,7 @@ o3d.io.write_triangle_mesh(
     mesh,
     write_vertex_colors=True
 )
+```
 Final output:
 
 meshed-poisson-colored.ply
