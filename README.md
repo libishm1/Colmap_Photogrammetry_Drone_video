@@ -10,9 +10,10 @@ the google drive structure is as follows - https://drive.google.com/drive/folder
 
 the videos to extract images from are hosted here - https://drive.google.com/drive/folders/1G-3tqRPTlefHTVRCwlt7l8SgC4OGmAsO?usp=sharing
 
+The Archeological documentation was published in the 54th edition of Caedroia - https://labyrinthos.net/caerdroia54.html , with the help of 
+Jeff Saward , Sachin patil and Dr Pandurang Sabale
 
-The documentation was published in the 54th edition of Caedroia - https://labyrinthos.net/caerdroia54.html , with the help of 
-Jeff Saward , Dr Sachin patil and Dr Pandurang Sabale
+Code documentation wil be added hereforth
 
 This project is licensed under the Creative Commons BY-NC-SA 4.0 License. This license allows others to distribute, remix, adapt, and build upon the material for non-commercial purposes only, provided that proper attribution is given to the creator. Any derivatives or adaptations must be released under the same license terms. For full details, please see the license description: https://creativecommons.org/licenses/by-nc-sa/4.0/ .
 
