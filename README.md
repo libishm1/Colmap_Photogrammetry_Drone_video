@@ -97,7 +97,8 @@ sudo apt-get install colmap
 sudo apt-get install ffmpeg
 sudo apt-get install xvfb
 pip install open3d
-Dependency roles:
+
+## Dependency roles:
 
 COLMAP – Structure-from-Motion & dense reconstruction
 
