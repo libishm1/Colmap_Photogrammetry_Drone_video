@@ -7,7 +7,7 @@
 
 This repository documents an **open-source workflow to convert a full-arc drone video into a photogrammetry pipeline**, resulting in a **textured 3D mesh** suitable for **cultural heritage documentation and fabrication**.
 
-The workflow was developed as part of an **independent research project** focused on documenting a ** twin large-scale stone labyrinths** in **Salem, Tamil Nadu, India**, estimated to be over **1200 years old**.
+The workflow was developed as part of an **independent research project** focused on documenting  **twin large-scale stone labyrinths** in **Salem, Tamil Nadu, India**, estimated to be over **1200 years old**.
 
 The emphasis of this repository is **strictly technical**:
 - data acquisition  
