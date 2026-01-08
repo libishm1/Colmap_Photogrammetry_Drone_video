@@ -36,7 +36,7 @@ Salem, Tamil Nadu, India
 ### Processed & 3D-Printable Files
 
 - Cleaned STL models (Rhino 8 + Bambu Studio):  
-  https://skfb.ly/pFrIY-
+  (https://sketchfab.com/3d-models/labyrinth-model-for-3dprinting-3298401c8cc6465da40a7c1e2170e6f6)
 
 ### Google Drive Structure
 
