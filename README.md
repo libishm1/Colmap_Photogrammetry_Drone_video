@@ -1,102 +1,246 @@
-Introduction
-A Workflow to Convert a full Arc Drone video into a Photogrametry workflow, towards rendering a textured obj for cultural heritage and documentation.
-
-This project is an independent reserach for documenting a stone labyrinth in india believed to be more than 1200 years old
-<img width="2261" height="1272" alt="image" src="https://github.com/user-attachments/assets/c272e339-20a3-45ea-b9af-220bdd89fe84" /> - Labyrinth 1 in Salem, Tamil Nadu, India.
-
-raw unprocessed scan is also hosted here - https://sketchfab.com/3d-models/ezhlu-suthu-kottai-labyrinth1-fd98e6ab4a6a447d8f8aaa80f26e390e
-Processed and 3dprintable STL files can be downloaded here - [https://skfb.ly/pFrIY](https://sketchfab.com/3d-models/labyrinth-model-for-3dprinting-3298401c8cc6465da40a7c1e2170e6f6)- 
-
-the google drive structure is as follows - https://drive.google.com/drive/folders/1OHUfLgzkVfzxqVNqoa2_PZS4i0-HLScH?usp=sharing
-
-the videos to extract images from are hosted here - https://drive.google.com/drive/folders/1G-3tqRPTlefHTVRCwlt7l8SgC4OGmAsO?usp=sharing
-
-The Archeological documentation was published in the 54th edition of Caedroia - https://labyrinthos.net/caerdroia54.html , with the help of 
-Jeff Saward , Sachin patil and Dr Pandurang Sabale
-
 Drone Photogrammetry Pipeline
+From Full Arc Drone Video to Textured 3D Mesh
+Introduction
 
-This repository describes an open‐source pipeline (implemented in Google Colab) that converts a drone video into a textured 3D mesh. In summary, we extract video frames, run COLMAP for SfM (sparse and dense reconstruction), and use Open3D for meshing and coloring. The final output is a vertex-colored PLY mesh. The pipeline uses ffmpeg, colmap, and open3d to automate these steps.
+This repository documents an open-source workflow to convert a full-arc drone video into a photogrammetry pipeline, resulting in a textured 3D mesh suitable for cultural heritage documentation and fabrication.
+
+The workflow was developed as part of an independent research project focused on documenting a large-scale stone labyrinth in Salem, Tamil Nadu, India, estimated to be over 1200 years old. The emphasis of this repository is strictly technical: acquisition, reconstruction, meshing, and export.
+
+Example subject: 
+<img width="2261" height="1272" alt="image" src="https://github.com/user-attachments/assets/c272e339-20a3-45ea-b9af-220bdd89fe84" /> - Stone labyrinth (Labyrinth 1), Salem, Tamil Nadu, India
+
+Related Data & Outputs
+Raw Scan (Unprocessed)
+
+Sketchfab (raw reconstruction):
+https://sketchfab.com/3d-models/ezhlu-suthu-kottai-labyrinth1-fd98e6ab4a6a447d8f8aaa80f26e390e
+
+Processed & 3D-Printable Files
+
+Cleaned STL models (Rhino + Bambu Studio):
+https://skfb.ly/pFrIY-
+
+Google Drive Structure
+
+Full project directory (COLMAP workspace, outputs):
+https://drive.google.com/drive/folders/1OHUfLgzkVfzxqVNqoa2_PZS4i0-HLScH
+
+Source Drone Videos
+
+Drone videos used for frame extraction:
+https://drive.google.com/drive/folders/1G-3tqRPTlefHTVRCwlt7l8SgC4OGmAsO
+
+Publication Context
+
+The archaeological documentation resulting from this workflow was published in:
+
+Caerdroia – Issue 54 (2025)
+https://labyrinthos.net/caerdroia54.html
+
+This repository focuses only on the digital documentation and reconstruction workflow.
+Interpretive, mythological, or religious narratives are intentionally excluded.
+
+Overview of the Pipeline
+
+This repository describes a fully open-source photogrammetry pipeline, implemented entirely in Google Colab, that converts drone video into a vertex-colored (textured) PLY mesh.
+
+Core tools used:
+
+ffmpeg – frame extraction from video
+
+COLMAP – sparse & dense photogrammetry
+
+Open3D – meshing, color transfer, export
+
+The final output is a textured PLY mesh, suitable for:
+
+Visualization
+
+Archival documentation
+
+Further cleanup for fabrication
 
 Requirements
 
-A Linux/Colab environment (GPU optional)
+This pipeline runs in a Linux / Google Colab environment.
 
-COLMAP (for SfM/dense reconstruction) – install via sudo apt-get install colmap.
+System
 
-FFmpeg (for frame extraction) – install via sudo apt-get install ffmpeg.
+Google Colab (GPU optional but recommended)
 
-Open3D (Python library for meshing and I/O) – install via pip install open3d.
+Dependencies
+sudo apt-get install colmap
+sudo apt-get install ffmpeg
+sudo apt-get install xvfb
+pip install open3d
 
-Xvfb (virtual X server for headless COLMAP) – install via sudo apt-get install xvfb.
+
+COLMAP – Structure-from-Motion & dense reconstruction
+
+FFmpeg – video → image extraction
+
+Xvfb – headless execution for COLMAP in Colab
+
+Open3D – mesh processing and file export
 
 Workflow
+1. Frame Extraction from Drone Video
 
-Extract frames from the drone video: Use FFmpeg to convert the video into individual image files. For example:
+Drone video is converted into individual image frames using FFmpeg.
 
 ffmpeg -i input_video.mp4 -vf fps=2 -qscale:v 2 images/frame_%04d.jpg
 
 
-This command (shown in our notebook) extracts frames at 2 FPS and saves them as JPEGs.
+Extracts frames at 2 FPS
 
-Run COLMAP Structure-from-Motion: With the extracted frames, run COLMAP’s SfM to compute camera poses and a sparse point cloud. This can be done using xvfb-run in Colab to allow GPU SIFT: e.g. colmap automatic_reconstructor --workspace_path PROJECT --image_path images --quality high --dense 1 --use_gpu 1. (The notebook also shows running sequential matching and colmap mapper to refine the sparse model.)
+Produces high-quality JPEG images
 
-Dense reconstruction: Use COLMAP’s dense pipeline to generate a fused point cloud. Specifically, run:
+Lower FPS reduces redundancy and computation time
 
-colmap image_undistorter to undistort images and prepare for stereo (max side ~2500 px).
+2. Sparse Reconstruction (Structure-from-Motion)
 
-colmap patch_match_stereo with geometric consistency to compute depth maps.
+COLMAP computes camera poses and a sparse point cloud.
 
-colmap stereo_fusion to fuse all depth maps into a dense colored point cloud (fused.ply).
+Example (automatic pipeline):
 
-In the notebook this is automated with commands like:
+colmap automatic_reconstructor \
+  --workspace_path PROJECT \
+  --image_path images \
+  --quality high \
+  --dense 1 \
+  --use_gpu 1
 
-xvfb-run -a colmap patch_match_stereo ... 
-xvfb-run -a colmap stereo_fusion --workspace_path dense --output_path dense/fused.ply
+
+In the notebook, this is executed using xvfb-run to support headless GPU SIFT in Colab.
+
+3. Dense Reconstruction
+
+The dense pipeline consists of:
+
+Image undistortion
+
+Patch-match stereo
+
+Stereo fusion
+
+Key commands:
+
+colmap image_undistorter
+colmap patch_match_stereo
+colmap stereo_fusion --output_path dense/fused.ply
 
 
-After this step, the dense point cloud (fused.ply) contains millions of XYZRGB points. The commands above are illustrated in the notebook.
+Output:
 
-Mesh reconstruction (Poisson): Convert the dense point cloud into a surface mesh. We apply Poisson surface reconstruction (via Open3D) to recover a smooth surface from the point cloud (fusing depth maps and normals)
-colmap.github.io
-. In practice, the notebook loads fused.ply into Open3D and runs:
+fused.ply
 
-mesh, densities = o3d.geometry.TriangleMesh.create_from_point_cloud_poisson(pcd, depth=11, scale=1.1)
+Dense point cloud with XYZ + RGB
+
+Often contains millions of points
+
+4. Mesh Reconstruction (Poisson Surface)
+
+The dense point cloud is converted into a watertight mesh using Poisson Surface Reconstruction in Open3D.
+
+mesh, densities = o3d.geometry.TriangleMesh.create_from_point_cloud_poisson(
+    pcd, depth=11, scale=1.1
+)
 mesh.remove_unreferenced_vertices()
 mesh.compute_vertex_normals()
 
 
-This yields a watertight mesh (mesh_poisson_o3d.ply) representing the labyrinth surface. (COLMAP also offers poisson_mesher, but we used Open3D for flexibility.)
+Output:
 
-Color transfer: To produce a textured (colored) mesh, we transfer colors from the fused point cloud to the mesh vertices. The notebook builds a KD-tree on the point cloud and, for each mesh vertex, finds the nearest point’s color. In code:
+mesh_poisson_o3d.ply
+
+Smooth, continuous surface
+
+Open3D was chosen instead of COLMAP’s Poisson mesher for greater control and extensibility.
+
+5. Color Transfer (Textured Mesh)
+
+To produce a textured mesh, vertex colors are transferred from the dense point cloud using nearest-neighbor lookup.
 
 pcd_tree = o3d.geometry.KDTreeFlann(pcd)
 colors = []
+
 for v in mesh.vertices:
     _, idx, _ = pcd_tree.search_knn_vector_3d(v, 1)
     colors.append(pcd.colors[idx[0]])
+
 mesh.vertex_colors = o3d.utility.Vector3dVector(colors)
 
+6. Export Textured PLY
+o3d.io.write_triangle_mesh(
+    "meshed-poisson-colored.ply",
+    mesh,
+    write_vertex_colors=True
+)
 
-Finally, we save the colored mesh to PLY:
 
-o3d.io.write_triangle_mesh("meshed-poisson-colored.ply", mesh, write_vertex_colors=True)
+Final output:
 
+meshed-poisson-colored.ply
 
-This writes a PLY file with RGB vertex colors (i.e. a “textured” point-colored mesh).
+Vertex-colored, textured mesh
 
-Results: The pipeline outputs a .ply file (e.g. meshed-poisson-colored.ply) that contains the final geometry with color. (In Colab output we see “Colored mesh saved at: …meshed-poisson-colored.ply”.) This file can be viewed in MeshLab or a 3D viewer, and can be further cleaned or prepared for printing in tools like Rhino or BambuStudio as needed.
+Viewable in MeshLab, Blender, or Rhino
 
-Notes
+Post-Processing (Outside Colab)
 
-Performance: Running COLMAP dense reconstruction on Google Drive (Colab) can be time-consuming (tens of minutes) due to large images and point clouds. A more user-friendly, faster alternative for smaller projects is Agisoft Metashape, which automates many steps with optimized C++ code.
+While reconstruction is done in Colab, cleanup and fabrication prep were done using:
 
-Skip religious context: This documentation focuses only on the technical photogrammetry steps; all cultural or mythological discussion from the source material has been omitted for clarity.
+Rhino 8 – mesh cleanup, decimation, repairs
 
-References: The workflow above follows standard photogrammetry techniques
-colmap.github.io
-. In particular, COLMAP’s dense fusion and Poisson meshing produce a colored point cloud and mesh, and Open3D was used to finalize and save the textured PLY.
+Bambu Studio – slicing and print preparation
 
-This project is licensed under the Creative Commons BY-NC-SA 4.0 License. This license allows others to distribute, remix, adapt, and build upon the material for non-commercial purposes only, provided that proper attribution is given to the creator. Any derivatives or adaptations must be released under the same license terms. For full details, please see the license description: https://creativecommons.org/licenses/by-nc-sa/4.0/ .
+Results
 
+Fully open-source, reproducible workflow
+
+Textured PLY mesh suitable for documentation
+
+STL derivatives suitable for 3D printing
+
+Applicable to large-scale outdoor heritage objects
+
+Notes on Performance
+
+COLMAP dense reconstruction is slow on Google Drive
+
+Large datasets may take tens of minutes to hours
+
+Disk I/O is a major bottleneck in Colab
+
+Faster Alternative
+
+For production or time-critical work:
+
+Agisoft Metashape offers significantly faster processing
+
+More user-friendly GUI
+
+Commercial, closed-source
+
+This repository prioritizes transparency and reproducibility over speed.
+
+License
+
+This project is licensed under the
+Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0).
+
+You are free to:
+
+Share and adapt the material
+
+Use it for non-commercial purposes
+
+Under the conditions that:
+
+Proper attribution is given
+
+Derivatives are shared under the same license
+
+License details:
+https://creativecommons.org/licenses/by-nc-sa/4.0/
 
