@@ -99,7 +99,7 @@ sudo apt-get install xvfb
 pip install open3d
 ```
 
-### Dependencies
+### Dependency roles
 
 COLMAP – Structure-from-Motion & dense reconstruction
 
@@ -109,8 +109,8 @@ Xvfb – headless execution for COLMAP in Colab
 
 Open3D – mesh processing and file export
 
-Workflow
-1. Frame Extraction from Drone Video
+##Workflow
+### 1. Frame Extraction from Drone Video
 Drone video is converted into individual image frames using FFmpeg.
 
 ```bash
@@ -123,7 +123,7 @@ Produces high-quality JPEG images
 
 Lower FPS reduces redundancy and computation time
 
-2. Sparse Reconstruction (Structure-from-Motion)
+### 2. Sparse Reconstruction (Structure-from-Motion)
 COLMAP computes camera poses and a sparse point cloud.
 
 Example (automatic pipeline):
@@ -139,7 +139,7 @@ colmap automatic_reconstructor \
 ```
 In the notebook, this is executed using xvfb-run to support headless GPU SIFT in Colab.
 
-3. Dense Reconstruction
+### 3. Dense Reconstruction
 The dense pipeline consists of:
 
 image undistortion
@@ -164,7 +164,7 @@ Dense point cloud with XYZ + RGB
 Often contains millions of points
 ```
 
-4. Mesh Reconstruction (Poisson Surface)
+### 4. Mesh Reconstruction (Poisson Surface)
 The dense point cloud is converted into a watertight mesh using Poisson Surface Reconstruction in Open3D.
 
 ```python
@@ -183,7 +183,7 @@ Smooth, continuous surface
 
 Open3D was chosen instead of COLMAP’s Poisson mesher for greater control and extensibility.
 
-5. Color Transfer (Textured Mesh)
+### 5. Color Transfer (Textured Mesh)
 Vertex colors are transferred from the dense point cloud using nearest-neighbor lookup.
 
 ```python
@@ -196,8 +196,9 @@ for v in mesh.vertices:
     colors.append(pcd.colors[idx[0]])
 
 mesh.vertex_colors = o3d.utility.Vector3dVector(colors)
-6. Export Textured PLY
-python
+```
+### 6. Export Textured PLY
+```python
 Copy code
 o3d.io.write_triangle_mesh(
     "meshed-poisson-colored.ply",
@@ -205,7 +206,7 @@ o3d.io.write_triangle_mesh(
     write_vertex_colors=True
 )
 ```
-Final output:
+### Final output:
 
 meshed-poisson-colored.ply
 
@@ -220,7 +221,7 @@ Rhino 8 – mesh cleanup, decimation, repairs
 
 Bambu Studio – slicing and print preparation
 
-Results
+### Results
 Fully open-source, reproducible workflow
 
 Textured PLY mesh suitable for documentation
@@ -229,7 +230,7 @@ STL derivatives suitable for 3D printing
 
 Applicable to large-scale outdoor heritage objects
 
-Notes on Performance
+### Notes on Performance
 COLMAP dense reconstruction is slow on Google Drive
 
 Large datasets may take tens of minutes to hours
@@ -249,7 +250,7 @@ commercial, closed-source
 
 This repository prioritizes transparency and reproducibility over speed.
 
-License
+### License
 This project is licensed under the
 Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0).
 
